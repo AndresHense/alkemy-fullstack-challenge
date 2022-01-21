@@ -4,6 +4,7 @@ import path from 'path'
 import dotenv from 'dotenv';
 import colors from 'colors'
 import ProductRouter from './routes/ProductRouter.js'
+import userRouter from './routes/userRouter.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app=express();
@@ -11,6 +12,7 @@ const app=express();
 app.use(express.json())
 dotenv.config();
 app.use("/api/products",ProductRouter)
+app.use("/api/users",userRouter)
 connectDB()
 
 const __dirname=path.resolve()
