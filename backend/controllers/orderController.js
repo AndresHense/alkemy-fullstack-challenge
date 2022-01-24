@@ -65,11 +65,6 @@ export const payOrders = asyncHandler(async (req, res) => {
 
   let preference = {
     items: itemsPreference,
-    back_urls: {
-      success: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-      failure: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-      pending: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-    },
     auto_return: 'approved',
   }
   try {
@@ -96,7 +91,7 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
     }
 
     const updatedOrder = order.save()
-    res.redirect(`/http://localhost:${process.env.PORT}/orders/${order.id}`)
+    res.redirect(`/orders/${order.id}`)
   } else {
     res.status(404)
     throw new Error('Order not found')
