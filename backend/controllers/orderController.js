@@ -65,7 +65,7 @@ export const payOrders = asyncHandler(async (req, res) => {
     })
   })
   const redirectUrl =
-    proccess.env.NODE_ENV === 'production'
+    process.env.NODE_ENV === 'production'
       ? `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`
       : `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`
   let preference = {
