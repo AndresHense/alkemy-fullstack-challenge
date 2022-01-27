@@ -4,6 +4,9 @@ import Order from '../models/orderModel.js'
 import generateToken from '../utils/generateToken.js'
 import nodemailer from 'nodemailer'
 import path from 'path'
+import User from '../models/userModel.js'
+import https from 'https'
+import fs from 'fs'
 
 // @desc create new order
 // @route POST /api/orders
@@ -67,7 +70,7 @@ export const payOrders = asyncHandler(async (req, res) => {
   const redirectUrl =
     process.env.NODE_ENV === 'production'
       ? `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`
-      : `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`
+      : `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay/`
   let preference = {
     items: itemsPreference,
     back_urls: {
@@ -110,23 +113,28 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
         pass: process.env.EMAIL_PASS,
       },
     })
-    console.log(req.user.email)
+
+    const getFile = (url) => {
+      const file = fs.createWriteStream(path.basename(url))
+      const request = https.get(url, (res) => {
+        res.pipe(file)
+      })
+    }
     const __dirname = path.resolve()
     const files = []
-    order.orderItems.forEach((p) =>
+    order.orderItems.forEach((p) => {
+      getFile(p.partiture)
       files.push({
         filename: path.basename(p.partiture),
-        path: path.join(
-          __dirname,
-          'backend',
-          'upload',
-          path.basename(p.partiture)
-        ),
+        path: path.join(__dirname, path.basename(p.partiture)),
       })
-    )
+    })
+    const user = await User.findById(order.user.toString())
+    const email = user.email
+
     let mailOptions = {
-      from: process.env.EMAIL__USER,
-      to: order.user.email,
+      from: process.env.EMAIL_USER,
+      to: email,
       subject: 'Shop partitures',
       text: 'hey, watsup, im testing tis',
       attachments: files,
