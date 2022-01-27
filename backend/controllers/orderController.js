@@ -1,12 +1,12 @@
 import asyncHandler from 'express-async-handler'
 import mercadopago from 'mercadopago'
 import Order from '../models/orderModel.js'
-import generateToken from '../utils/generateToken.js'
 import nodemailer from 'nodemailer'
 import path from 'path'
 import User from '../models/userModel.js'
 import https from 'https'
 import fs from 'fs'
+import request from 'request-promise-native'
 
 // @desc create new order
 // @route POST /api/orders
@@ -137,6 +137,75 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
       res.redirect(`http://localhost:3000/order/${req.params.id}`)
     } else {
       res.redirect(`/order/${req.params.id}`)
+    }
+    res.json(updatedOrder)
+  } else {
+    res.status(404)
+    throw new Error('Order not found')
+  }
+})
+
+// @desc    Update order to paid
+// @route   GET /api/orders/:id/paypal
+// @access  Private
+export const updateOrderToPaidWithPayPal = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id)
+
+  if (order) {
+    order.isPaid = true
+    order.paidAt = Date.now()
+    order.paymentResult = {
+      id: req.body.id,
+      status: req.body.status,
+      update_time: req.body.update_time,
+      email_address: req.body.payer.email_address,
+    }
+
+    const updatedOrder = await order.save()
+
+    if (updatedOrder.paymentResult.status === 'COMPLETED') {
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      })
+
+      const getFile = async (pdfURL, outputFilename) => {
+        let pdfBuffer = await request.get({ uri: pdfURL, encoding: null })
+        console.log('Writing downloaded PDF file to ' + outputFilename + '...')
+        fs.writeFileSync(outputFilename, pdfBuffer)
+      }
+
+      const __dirname = path.resolve()
+      const files = []
+      order.orderItems.forEach((p) => {
+        getFile(p.partiture, path.join('uploads', path.basename(p.partiture)))
+      })
+      order.orderItems.forEach((p) => {
+        files.push({
+          filename: path.basename(p.partiture),
+          path: path.join(__dirname, 'uploads', path.basename(p.partiture)),
+        })
+      })
+      const user = await User.findById(order.user.toString())
+      const email = user.email
+
+      let mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Shop partitures',
+        text: 'hey, watsup, im testing tis',
+        attachments: files,
+      }
+      transporter.sendMail(mailOptions, (err, data) => {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log('email sent!')
+        }
+      })
     }
     res.json(updatedOrder)
   } else {

@@ -30,6 +30,9 @@ app.use('/api/products', ProductRouter)
 app.use('/api/users', userRouter)
 app.use('/api/orders', orderRouter)
 app.use('/api/upload', uploadRoutes)
+app.get('/api/config/paypal', (req, res) => {
+  res.send(process.env.PAYPAL_CLIENT_ID)
+})
 connectDB()
 
 mercadopago.configure({ access_token: process.env.ACCESS_TOKEN })

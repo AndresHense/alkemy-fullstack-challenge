@@ -123,6 +123,7 @@ const ProductEditScreen = () => {
         image,
         description,
         partiture,
+        embedVideoId,
       })
     )
   }

@@ -55,7 +55,6 @@ const ProductScreen = () => {
     dispatch(createProductReview(id, { rating, comment }))
   }
 
-  const embedId = '90Ur-gg6xxY'
   return (
     <>
       <Link to='/' className='btn btn-light my-3'>
@@ -75,7 +74,11 @@ const ProductScreen = () => {
                   <Image src={product.image} fluid></Image>
                 </Carousel.Item>
                 <Carousel.Item>
-                  <YoutubeEmbed embedId={embedId} width={400} height={450} />
+                  <YoutubeEmbed
+                    embedId={product.embedVideoId}
+                    width={400}
+                    height={450}
+                  />
                 </Carousel.Item>
               </Carousel>
             </Col>

@@ -17,6 +17,10 @@ import {
   ORDER_LIST_MY_SUCCESS,
   ORDER_LIST_REQUEST,
   ORDER_LIST_SUCCESS,
+  ORDER_PAYPAL_FAIL,
+  ORDER_PAYPAL_REQUEST,
+  ORDER_PAYPAL_RESET,
+  ORDER_PAYPAL_SUCCESS,
   ORDER_PAY_FAIL,
   ORDER_PAY_REQUEST,
   ORDER_PAY_RESET,
@@ -63,6 +67,21 @@ export const orderPayReducer = (state = {}, action) => {
     case ORDER_PAY_FAIL:
       return { loading: false, error: action.payload }
     case ORDER_PAY_RESET:
+      return {}
+    default:
+      return state
+  }
+}
+
+export const orderPayPalReducer = (state = {}, action) => {
+  switch (action.type) {
+    case ORDER_PAYPAL_REQUEST:
+      return { loading: true }
+    case ORDER_PAYPAL_SUCCESS:
+      return { loading: false, success: true }
+    case ORDER_PAYPAL_FAIL:
+      return { loading: false, error: action.payload }
+    case ORDER_PAYPAL_RESET:
       return {}
     default:
       return state
