@@ -195,8 +195,8 @@ export const updateOrderToPaidWithPayPal = asyncHandler(async (req, res) => {
       let mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: 'Shop partitures',
-        text: 'hey, watsup, im testing tis',
+        subject: 'Music Sheet Shop',
+        text: 'Thank for your purchase.',
         attachments: files,
       }
       transporter.sendMail(mailOptions, (err, data) => {
