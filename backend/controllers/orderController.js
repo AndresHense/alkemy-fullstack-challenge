@@ -64,27 +64,20 @@ export const payOrders = asyncHandler(async (req, res) => {
       quantity: item.qty,
     })
   })
+  const redirectUrl =
+    proccess.env.NODE_ENV === 'production'
+      ? `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`
+      : `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`
+  let preference = {
+    items: itemsPreference,
+    back_urls: {
+      success: redirectUrl,
+      failure: redirectUrl,
+      pending: redirectUrl,
+    },
+    auto_return: 'approved',
+  }
 
-  let preference =
-    proccess.NODE_ENV === 'development'
-      ? {
-          items: itemsPreference,
-          back_urls: {
-            success: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-            failure: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-            pending: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-          },
-          auto_return: 'approved',
-        }
-      : {
-          items: itemsPreference,
-          back_urls: {
-            success: `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`,
-            failure: `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`,
-            pending: `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`,
-          },
-          auto_return: 'approved',
-        }
   try {
     const response = await mercadopago.preferences.create(preference)
     res.json(response.body.init_point)

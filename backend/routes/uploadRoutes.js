@@ -20,8 +20,8 @@ const storage = multer.diskStorage({
   },
 })
 
-function checkFileType(file, cb) {
-  const filetypes = /jpg|jpeg|png|pdf/
+function checkFileTypeImage(file, cb) {
+  const filetypes = /jpg|jpeg|png/
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
   const mimetype = filetypes.test(file.mimetype)
 
@@ -32,20 +32,51 @@ function checkFileType(file, cb) {
   }
 }
 
-const upload = multer({
+function checkFileTypePdf(file, cb) {
+  const filetypes = /pdf/
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
+  const mimetype = filetypes.test(file.mimetype)
+
+  if (extname && mimetype) {
+    return cb(null, true)
+  } else {
+    cb('Images only!')
+  }
+}
+const uploadImage = multer({
   storage,
   fileFilter: function (req, file, cb) {
-    checkFileType(file, cb)
+    checkFileTypeImage(file, cb)
+  },
+})
+
+const uploadPdf = multer({
+  storage,
+  fileFilter: function (req, file, cb) {
+    checkFileTypePdf(file, cb)
   },
 })
 router.post(
   '/',
   protect,
   admin,
-  upload.single('image'),
+  uploadImage.single('image'),
   asyncHandler(async (req, res) => {
     const uploadPhoto = await cloudinary.v2.uploader.upload(`${req.file.path}`)
     res.send(uploadPhoto.url)
+  })
+)
+
+router.post(
+  '/partiture',
+  protect,
+  admin,
+  uploadPdf.single('partiture'),
+  asyncHandler(async (req, res) => {
+    const uploadPartiture = await cloudinary.v2.uploader.upload(
+      `${req.file.path}`
+    )
+    res.send(uploadPartiture.url)
   })
 )
 

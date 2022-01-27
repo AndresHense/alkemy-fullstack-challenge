@@ -83,8 +83,9 @@ const ProductEditScreen = () => {
 
   const uploadFilePartitureHandler = async (e) => {
     const file = e.target.files[0]
+    console.log(e.target.files)
     const formData = new FormData()
-    formData.append('image', file)
+    formData.append('partiture', file)
     setUploading(true)
     try {
       const config = {
@@ -93,7 +94,11 @@ const ProductEditScreen = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      const { data } = await axios.post('/api/upload', formData, config)
+      const { data } = await axios.post(
+        '/api/upload/partiture',
+        formData,
+        config
+      )
       setPartiture(data)
       setUploading(false)
     } catch (error) {

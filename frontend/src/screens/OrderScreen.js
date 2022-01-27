@@ -36,7 +36,7 @@ const OrderScreen = () => {
     order.itemsPrice = addDecimals(
       order.orderItems.reduce((acc, item) => acc + item.qty * item.price, 0)
     )
-    order.shippingPrice = addDecimals(order.itemsPrice > 100 ? 0 : 100)
+    order.shippingPrice = addDecimals(0)
     order.taxPrice = addDecimals(order.itemsPrice * 0.15)
     order.totalPrice = addDecimals(
       Number(order.shippingPrice) +

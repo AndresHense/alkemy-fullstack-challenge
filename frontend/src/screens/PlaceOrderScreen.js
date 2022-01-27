@@ -27,7 +27,7 @@ const PlaceOrderScreen = () => {
   cart.itemsPrice = addDecimals(
     cart.cartItems.reduce((acc, item) => acc + item.qty * item.price, 0)
   )
-  cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 0 : 100)
+  cart.shippingPrice = addDecimals(0)
   cart.taxPrice = addDecimals(cart.itemsPrice * 0.15)
   cart.totalPrice = addDecimals(
     Number(cart.shippingPrice) + Number(cart.itemsPrice) + Number(cart.taxPrice)
