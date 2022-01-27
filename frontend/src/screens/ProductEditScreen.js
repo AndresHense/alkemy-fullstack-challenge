@@ -53,6 +53,7 @@ const ProductEditScreen = () => {
         setCountInStock(product.countInStock)
         setImage(product.image)
         setDescription(product.description)
+        setPartiture(product.partiture)
       }
     } else {
       navigate('/login')
@@ -79,6 +80,28 @@ const ProductEditScreen = () => {
       setUploading(false)
     }
   }
+
+  const uploadFilePartitureHandler = async (e) => {
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('image', file)
+    setUploading(true)
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+      const { data } = await axios.post('/api/upload', formData, config)
+      setPartiture(data)
+      setUploading(false)
+    } catch (error) {
+      console.error(error)
+      setUploading(false)
+    }
+  }
+
   const submitHandler = (e) => {
     e.preventDefault()
 
@@ -192,7 +215,7 @@ const ProductEditScreen = () => {
 
                 <Form.Control
                   type='file'
-                  onChange={uploadFileHandler}
+                  onChange={uploadFilePartitureHandler}
                 ></Form.Control>
                 {uploading && <Loader />}
               </Form.Group>

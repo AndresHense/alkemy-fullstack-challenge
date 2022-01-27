@@ -2,6 +2,10 @@ import express from 'express'
 import multer from 'multer'
 import path from 'path'
 import { admin, protect } from '../middleware/authMiddleware.js'
+import pkg from 'cloudinary'
+import asyncHandler from 'express-async-handler'
+const cloudinary = pkg
+
 const router = express.Router()
 
 const storage = multer.diskStorage({
@@ -34,8 +38,15 @@ const upload = multer({
     checkFileType(file, cb)
   },
 })
-router.post('/', protect, admin, upload.single('image'), (req, res) => {
-  res.send(`/${req.file.path}`)
-})
+router.post(
+  '/',
+  protect,
+  admin,
+  upload.single('image'),
+  asyncHandler(async (req, res) => {
+    const uploadPhoto = await cloudinary.v2.uploader.upload(`${req.file.path}`)
+    res.send(uploadPhoto.url)
+  })
+)
 
 export default router

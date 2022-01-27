@@ -11,11 +11,21 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 import morgan from 'morgan'
 import mercadopago from 'mercadopago'
 import cors from 'cors'
+import pkg from 'cloudinary'
+
+const cloudinary = pkg
 const app = express()
 
 app.use(express.json())
 app.use(cors())
 dotenv.config()
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+})
+
 app.use('/api/products', ProductRouter)
 app.use('/api/users', userRouter)
 app.use('/api/orders', orderRouter)
