@@ -229,6 +229,7 @@ const OrderScreen = () => {
               </ListGroup.Item>
               {!order.isPaid && (
                 <>
+                  {/*
                   <ListGroup.Item>
                     <Button
                       type='button'
@@ -239,6 +240,7 @@ const OrderScreen = () => {
                       Pay Order
                     </Button>
                   </ListGroup.Item>
+                */}
                   <ListGroup.Item>
                     {loadingPayPal && <Loader />}
                     {!sdkReady ? (

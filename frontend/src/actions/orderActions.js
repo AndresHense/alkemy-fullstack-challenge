@@ -121,7 +121,6 @@ export const payPalOrder =
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      console.log(paymentResult)
       const { data } = await axios.post(
         `/api/orders/${orderId}/paypal`,
         paymentResult,
