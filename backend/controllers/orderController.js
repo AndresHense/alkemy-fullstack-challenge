@@ -126,7 +126,7 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
     )
     let mailOptions = {
       from: process.env.EMAIL__USER,
-      to: req.user.email,
+      to: order.user.email,
       subject: 'Shop partitures',
       text: 'hey, watsup, im testing tis',
       attachments: files,
