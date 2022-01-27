@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Button, Col, Row, ListGroup, Image, Card } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
-import {
-  useNavigate,
-  Link,
-  useLocation,
-  useParams,
-  Navigate,
-} from 'react-router-dom'
-import { createOrder, payOrder } from '../actions/orderActions'
+import { useNavigate, Link, useParams } from 'react-router-dom'
+import { deliverOrder, payOrder } from '../actions/orderActions'
 import Message from '../components/Message'
-import CheckoutSteps from '../components/CheckoutSteps'
-import { USER_DETAILS_RESET } from '../constants/userConstants'
 import { getOrderDetails } from '../actions/orderActions'
 import Loader from '../components/Loader'
-
+import {
+  ORDER_DELIVER_RESET,
+  ORDER_PAY_RESET,
+} from '../constants/orderConstants'
 const OrderScreen = () => {
   const params = useParams()
   const { id } = params
@@ -24,8 +19,14 @@ const OrderScreen = () => {
   const orderDetails = useSelector((state) => state.orderDetails)
   const { order, loading, error } = orderDetails
 
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
   const orderPay = useSelector((state) => state.orderPay)
-  const { redirect, loading: loadingPay, error: errorPay } = orderPay
+  const { redirect, success: successPay } = orderPay
+
+  const orderDeliver = useSelector((state) => state.orderDeliver)
+  const { success: successDeliver, loading: loadingDeliver } = orderDeliver
 
   if (!loading) {
     const addDecimals = (num) => {
@@ -44,17 +45,34 @@ const OrderScreen = () => {
     )
   }
   useEffect(() => {
-    if (!order || order._id !== id) {
+    if (!userInfo) {
+      navigate('/login')
+    }
+    if (!order || order._id !== id || successPay || successDeliver) {
+      dispatch({ type: ORDER_PAY_RESET })
+      dispatch({ type: ORDER_DELIVER_RESET })
       dispatch(getOrderDetails(id))
     }
     if (redirect) {
-      console.log(redirect)
       window.location.href = redirect
     }
-  }, [dispatch, id, order, redirect, navigate])
+  }, [
+    dispatch,
+    id,
+    order,
+    redirect,
+    navigate,
+    userInfo,
+    successPay,
+    successDeliver,
+  ])
 
   const payOrderHandler = () => {
     dispatch(payOrder(id))
+  }
+
+  const deliverOrderHandler = () => {
+    dispatch(deliverOrder(order))
   }
   return loading ? (
     <Loader />
@@ -165,16 +183,31 @@ const OrderScreen = () => {
                   <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
-              <ListGroup.Item>
-                <Button
-                  type='button'
-                  className='w-100'
-                  disabled={order.orderItems === 0}
-                  onClick={payOrderHandler}
-                >
-                  Pay Order
-                </Button>
-              </ListGroup.Item>
+              {!order.isPaid && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    className='w-100'
+                    disabled={order.orderItems === 0}
+                    onClick={payOrderHandler}
+                  >
+                    Pay Order
+                  </Button>
+                </ListGroup.Item>
+              )}
+              {loadingDeliver && <Loader />}
+              {userInfo &&
+                userInfo.isAdmin &&
+                order.isPaid &&
+                !order.isDelivered && (
+                  <Button
+                    type='button'
+                    className='w-100'
+                    onClick={deliverOrderHandler}
+                  >
+                    Mark as Delivered
+                  </Button>
+                )}
             </ListGroup>
           </Card>
         </Col>

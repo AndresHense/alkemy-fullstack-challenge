@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler'
 import mercadopago from 'mercadopago'
 import Order from '../models/orderModel.js'
 import generateToken from '../utils/generateToken.js'
+import nodemailer from 'nodemailer'
+import path from 'path'
 
 // @desc create new order
 // @route POST /api/orders
@@ -65,6 +67,11 @@ export const payOrders = asyncHandler(async (req, res) => {
 
   let preference = {
     items: itemsPreference,
+    back_urls: {
+      success: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
+      failure: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
+      pending: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
+    },
     auto_return: 'approved',
   }
   try {
@@ -90,8 +97,75 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
       merchantOrder: req.query.merchant_order_id,
     }
 
-    const updatedOrder = order.save()
-    res.redirect(`/orders/${order.id}`)
+    const updatedOrder = await order.save()
+
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'andreshense',
+        pass: process.env.EMAIL_PASS,
+      },
+    })
+
+    const __dirname = path.resolve()
+    const filePath = path.join(__dirname, 'backend', 'data', 'Elena.pdf')
+    let mailOptions = {
+      from: 'andreshense@gmail.com',
+      to: 'industriaspepetoa@hotmail.com',
+      subject: 'test nodemailer',
+      text: 'hey, watsup, im testing tis',
+      attachments: [
+        {
+          filename: 'Elena.pdf',
+          path: filePath,
+        },
+      ],
+    }
+    transporter.sendMail(mailOptions, (err, data) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('email sent!')
+      }
+    })
+    if (process.env.NODE_ENV === 'development') {
+      res.redirect(`http://localhost:3000/order/${req.params.id}`)
+    } else {
+      res.redirect(`/order/${req.params.id}`)
+    }
+    res.json(updatedOrder)
+  } else {
+    res.status(404)
+    throw new Error('Order not found')
+  }
+})
+
+// @desc get order of user
+// @route GET /api/orders/:id
+// @access private
+export const getMyOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id })
+  res.json(orders)
+})
+
+// @desc get all orders
+// @route GET /api/orders/
+// @access private/Admin
+export const getOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({}).populate('user', 'id name')
+  res.json(orders)
+})
+
+// @desc deliver order
+// @route PUT /api/orders/:id
+// @access private/Admin
+export const updateOrderToDelivered = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id)
+  if (order) {
+    order.isDelivered = true
+    order.deliveredAt = Date.now()
+    const updatedOrder = await order.save()
+    res.json(updatedOrder)
   } else {
     res.status(404)
     throw new Error('Order not found')
