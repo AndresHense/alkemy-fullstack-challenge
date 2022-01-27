@@ -23,7 +23,7 @@ const productSchema = mongoose.Schema(
     },
     name: { type: String, required: true },
     image: { type: String, required: true },
-    response: { type: Buffer, required: false },
+    partiture: { type: String, required: false },
     description: { type: String, required: true },
     brand: { type: String, required: true },
     category: { type: String, required: true },

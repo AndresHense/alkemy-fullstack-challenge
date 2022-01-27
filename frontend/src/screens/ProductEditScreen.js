@@ -16,6 +16,7 @@ const ProductEditScreen = () => {
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
   const [image, setImage] = useState('')
+  const [partiture, setPartiture] = useState('')
   const [countInStock, setCountInStock] = useState(0)
   const [uploading, setUploading] = useState(false)
 
@@ -91,6 +92,7 @@ const ProductEditScreen = () => {
         countInStock,
         image,
         description,
+        partiture,
       })
     )
   }
@@ -170,6 +172,22 @@ const ProductEditScreen = () => {
                   value={image}
                   onChange={(e) => setImage(e.target.value)}
                   placeholder='Enter image url'
+                ></Form.Control>
+
+                <Form.Control
+                  type='file'
+                  onChange={uploadFileHandler}
+                ></Form.Control>
+                {uploading && <Loader />}
+              </Form.Group>
+
+              <Form.Group className='py-2' controlid='partiture'>
+                <Form.Label>Partiture</Form.Label>
+                <Form.Control
+                  type='text'
+                  value={partiture}
+                  onChange={(e) => setPartiture(e.target.value)}
+                  placeholder='Enter partiture url'
                 ></Form.Control>
 
                 <Form.Control

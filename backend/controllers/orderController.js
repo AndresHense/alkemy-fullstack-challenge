@@ -65,15 +65,26 @@ export const payOrders = asyncHandler(async (req, res) => {
     })
   })
 
-  let preference = {
-    items: itemsPreference,
-    back_urls: {
-      success: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-      failure: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-      pending: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
-    },
-    auto_return: 'approved',
-  }
+  let preference =
+    proccess.NODE_ENV === 'development'
+      ? {
+          items: itemsPreference,
+          back_urls: {
+            success: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
+            failure: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
+            pending: `http://localhost:${process.env.PORT}/api/orders/${req.params.id}/updatepay`,
+          },
+          auto_return: 'approved',
+        }
+      : {
+          items: itemsPreference,
+          back_urls: {
+            success: `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`,
+            failure: `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`,
+            pending: `https://shop-mer.herokuapp.com/api/orders/${req.params.id}/updatepay`,
+          },
+          auto_return: 'approved',
+        }
   try {
     const response = await mercadopago.preferences.create(preference)
     res.json(response.body.init_point)
@@ -102,24 +113,30 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
     let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'andreshense',
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     })
-
+    console.log(req.user.email)
     const __dirname = path.resolve()
-    const filePath = path.join(__dirname, 'backend', 'data', 'Elena.pdf')
+    const files = []
+    order.orderItems.forEach((p) =>
+      files.push({
+        filename: path.basename(p.partiture),
+        path: path.join(
+          __dirname,
+          'backend',
+          'upload',
+          path.basename(p.partiture)
+        ),
+      })
+    )
     let mailOptions = {
-      from: 'andreshense@gmail.com',
-      to: 'industriaspepetoa@hotmail.com',
-      subject: 'test nodemailer',
+      from: process.env.EMAIL__USER,
+      to: req.user.email,
+      subject: 'Shop partitures',
       text: 'hey, watsup, im testing tis',
-      attachments: [
-        {
-          filename: 'Elena.pdf',
-          path: filePath,
-        },
-      ],
+      attachments: files,
     }
     transporter.sendMail(mailOptions, (err, data) => {
       if (err) {
