@@ -26,6 +26,7 @@ const productSchema = mongoose.Schema(
     partiture: { type: String, required: false },
     description: { type: String, required: true },
     brand: { type: String, required: true },
+    embedVideoId: { type: String },
     category: { type: String, required: true },
     price: { type: Number, required: true, default: 0 },
     countInStock: { type: Number, required: true, default: 0 },

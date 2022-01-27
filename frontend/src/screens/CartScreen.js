@@ -32,7 +32,7 @@ const CartScreen = () => {
   }
   const checkoutHandler = () => {
     if (userInfo) {
-      navigate('/shipping')
+      navigate('/placeorder')
     } else {
       navigate('/login')
     }

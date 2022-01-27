@@ -10,28 +10,30 @@ import { ORDER_CREATE_RESET } from '../constants/orderConstants'
 
 const PlaceOrderScreen = () => {
   const cart = useSelector((state) => state.cart)
-  const { shippingAddress, paymentMethod } = cart
+  //const { shippingAddress, paymentMethod } = cart
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
+  /*
   if (!shippingAddress) {
     navigate('/shipping')
   } else if (!paymentMethod) {
     navigate('/payment')
   }
-
+*/
   const addDecimals = (num) => {
     return Number(Math.round(num * 100) / 100).toFixed(2)
   }
 
-  cart.itemsPrice = addDecimals(
+  cart.totalPrice = addDecimals(
     cart.cartItems.reduce((acc, item) => acc + item.qty * item.price, 0)
   )
+  /*
   cart.shippingPrice = addDecimals(0)
   cart.taxPrice = addDecimals(cart.itemsPrice * 0.15)
   cart.totalPrice = addDecimals(
     Number(cart.shippingPrice) + Number(cart.itemsPrice) + Number(cart.taxPrice)
   )
+  */
   const orderCreate = useSelector((state) => state.orderCreate)
   const { order, success, error } = orderCreate
 
@@ -47,12 +49,12 @@ const PlaceOrderScreen = () => {
   const placeOrderHandler = () => {
     dispatch(
       createOrder({
-        itemsPrice: cart.itemsPrice,
-        shippingAddress: cart.shippingAddress,
-        paymentMethod: cart.paymentMethod,
+        //itemsPrice: cart.itemsPrice,
+        //shippingAddress: cart.shippingAddress,
+        //paymentMethod: cart.paymentMethod,
         orderItems: cart.cartItems,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
+        //shippingPrice: cart.shippingPrice,
+        //taxPrice: cart.taxPrice,
         totalPrice: cart.totalPrice,
       })
     )
@@ -60,10 +62,11 @@ const PlaceOrderScreen = () => {
 
   return (
     <>
-      <CheckoutSteps step1 step2 step3 step4 />
+      <CheckoutSteps step1 step2 />
       <Row>
         <Col md={8}>
           <ListGroup variant='flush'>
+            {/*
             <ListGroup.Item>
               <h2>Shipping</h2>
               <p>
@@ -79,6 +82,7 @@ const PlaceOrderScreen = () => {
                 {paymentMethod}
               </p>
             </ListGroup.Item>
+            */}
             <ListGroup.Item>
               <h2>Order Items</h2>
               {cart.cartItems.length === 0 ? (
@@ -121,9 +125,10 @@ const PlaceOrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>${cart.itemsPrice}</Col>
+                  <Col>${cart.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
+              {/*
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
@@ -142,6 +147,7 @@ const PlaceOrderScreen = () => {
                   <Col>${cart.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
+              */}
               <ListGroup.Item>
                 {error && <Message variant='danger'>{error}</Message>}
               </ListGroup.Item>

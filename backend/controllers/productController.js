@@ -57,6 +57,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     countInStock,
     image,
     partiture,
+    embedVideoId,
   } = req.body
   const product = await Product.findById(req.params.id)
   if (product) {
@@ -68,6 +69,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     product.countInStock = countInStock
     product.image = image
     product.partiture = partiture
+    product.embedVideoId = embedVideoId
     const updatedProduct = await product.save()
     res.json(updatedProduct)
   } else {
@@ -91,6 +93,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     numReviews: 0,
     description: 'sample description',
     partiture: '/partitures/sample.pdf',
+    embedVideoId: 'oiajfwoiwj',
   })
   const createdProduct = await product.save()
   res.status(201).json(createdProduct)

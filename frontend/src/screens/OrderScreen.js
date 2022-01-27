@@ -28,6 +28,7 @@ const OrderScreen = () => {
   const orderDeliver = useSelector((state) => state.orderDeliver)
   const { success: successDeliver, loading: loadingDeliver } = orderDeliver
 
+  /*
   if (!loading) {
     const addDecimals = (num) => {
       return Number(Math.round(num * 100) / 100).toFixed(2)
@@ -44,6 +45,7 @@ const OrderScreen = () => {
         Number(order.taxPrice)
     )
   }
+  */
   useEffect(() => {
     if (!userInfo) {
       navigate('/login')
@@ -85,21 +87,23 @@ const OrderScreen = () => {
         <Col md={8}>
           <ListGroup variant='flush'>
             <ListGroup.Item>
-              <h2>Shipping</h2>
+              <h2>User details</h2>
               <p>
                 <strong>Name: </strong>
                 {order.user.name}
               </p>
               <p>
                 <strong>Email: </strong>
-                <a href={`mailto:${order.user.mail}`}>{order.user.mail}</a>
+                <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
+              {/*
               <p>
                 <strong>Address: </strong>
                 {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
                 {order.shippingAddress.postalCode},{' '}
                 {order.shippingAddress.country}
               </p>
+              */}
               {order.isDelivered ? (
                 <Message variant='success'>
                   Delivered on {order.deliveredAt}
@@ -109,11 +113,12 @@ const OrderScreen = () => {
               )}
             </ListGroup.Item>
             <ListGroup.Item>
+              {/*
               <h2>Payment Method</h2>
               <p>
                 <strong>Method: </strong>
                 {order.paymentMethod}
-              </p>
+              </p>*/}
               {order.isPaid ? (
                 <Message variant='success'>Paid on {order.paidAt}</Message>
               ) : (
@@ -159,6 +164,7 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <h2>Order Summary</h2>
               </ListGroup.Item>
+              {/*
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
@@ -177,6 +183,7 @@ const OrderScreen = () => {
                   <Col>${order.taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
+              */}
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>

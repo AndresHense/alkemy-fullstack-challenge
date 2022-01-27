@@ -19,6 +19,7 @@ const ProductEditScreen = () => {
   const [partiture, setPartiture] = useState('')
   const [countInStock, setCountInStock] = useState(0)
   const [uploading, setUploading] = useState(false)
+  const [embedVideoId, setEmbedVideoId] = useState('')
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -54,6 +55,7 @@ const ProductEditScreen = () => {
         setImage(product.image)
         setDescription(product.description)
         setPartiture(product.partiture)
+        setEmbedVideoId(product.embedVideoId)
       }
     } else {
       navigate('/login')
@@ -171,6 +173,16 @@ const ProductEditScreen = () => {
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                   placeholder='Enter brand'
+                ></Form.Control>
+              </Form.Group>
+
+              <Form.Group className='py-2' controlid='Embeded video id'>
+                <Form.Label>Embeded Id</Form.Label>
+                <Form.Control
+                  type='text'
+                  value={embedVideoId}
+                  onChange={(e) => setEmbedVideoId(e.target.value)}
+                  placeholder='Enter Embeded Video Id'
                 ></Form.Control>
               </Form.Group>
 

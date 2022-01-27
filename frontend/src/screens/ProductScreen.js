@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Col, Row, Button, Image, Card, ListGroup, Form } from 'react-bootstrap'
+import {
+  Col,
+  Row,
+  Button,
+  Image,
+  Card,
+  ListGroup,
+  Form,
+  Carousel,
+} from 'react-bootstrap'
 import Rating from '../components/Rating'
 import { useParams } from 'react-router'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +19,7 @@ import Loader from '../components/Loader.js'
 import Message from '../components/Message.js'
 import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants'
 import Meta from '../components/Meta'
+import YoutubeEmbed from '../components/YoutubeEmbed'
 const ProductScreen = () => {
   const [qty, setQty] = useState(1)
   const [rating, setRating] = useState(0)
@@ -44,6 +54,8 @@ const ProductScreen = () => {
     e.preventDefault()
     dispatch(createProductReview(id, { rating, comment }))
   }
+
+  const embedId = '90Ur-gg6xxY'
   return (
     <>
       <Link to='/' className='btn btn-light my-3'>
@@ -58,7 +70,14 @@ const ProductScreen = () => {
           <Meta title={product.name} />
           <Row>
             <Col md={6}>
-              <Image src={product.image} fluid></Image>
+              <Carousel className='bg-dark' stop='hover'>
+                <Carousel.Item>
+                  <Image src={product.image} fluid></Image>
+                </Carousel.Item>
+                <Carousel.Item>
+                  <YoutubeEmbed embedId={embedId} width={400} height={450} />
+                </Carousel.Item>
+              </Carousel>
             </Col>
             <Col md={3}>
               <ListGroup variant='flush'>
