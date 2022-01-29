@@ -7,10 +7,7 @@ import {
   ProductCreateReducer,
   ProductDeleteReducer,
   ProductUpdateReducer,
-  ProductCreateReviewReducer,
-  ProductTopRatedReducer,
 } from './reducers/productReducers.js'
-import { cartReducer } from './reducers/cartReducers.js'
 import {
   userDeleteReducer,
   userDetailsReducer,
@@ -20,25 +17,13 @@ import {
   userUpdateProfileReducer,
   userUpdateReducer,
 } from './reducers/userReducers.js'
-import {
-  orderCreateReducer,
-  orderDeliverReducer,
-  orderDetailsReducer,
-  orderListMyReducer,
-  orderListReducer,
-  orderPayReducer,
-  orderPayPalReducer,
-} from './reducers/orderReducers.js'
+
 const reducer = combineReducers({
   productList: ProductListReducer,
   productDetails: ProductDetailsReducer,
   productCreate: ProductCreateReducer,
   productDelete: ProductDeleteReducer,
   productUpdate: ProductUpdateReducer,
-  productCreateReview: ProductCreateReviewReducer,
-  productTopRated: ProductTopRatedReducer,
-
-  cart: cartReducer,
 
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
@@ -47,33 +32,13 @@ const reducer = combineReducers({
   userDelete: userDeleteReducer,
   userUpdate: userUpdateReducer,
   userUpdateProfile: userUpdateProfileReducer,
-
-  orderCreate: orderCreateReducer,
-  orderDetails: orderDetailsReducer,
-  orderPay: orderPayReducer,
-  orderPayPal: orderPayPalReducer,
-  orderListMy: orderListMyReducer,
-  orderList: orderListReducer,
-  orderDeliver: orderDeliverReducer,
 })
-
-const cartItemsFromStorage = localStorage.getItem('cartItems')
-  ? JSON.parse(localStorage.getItem('cartItems'))
-  : []
 
 const userInfoFromStorage = localStorage.getItem('userInfo')
   ? JSON.parse(localStorage.getItem('userInfo'))
   : null
 
-const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
-  ? JSON.parse(localStorage.getItem('shippingAddress'))
-  : {}
-
 const initialState = {
-  cart: {
-    cartItems: cartItemsFromStorage,
-    shippingAddress: shippingAddressFromStorage,
-  },
   userLogin: { userInfo: userInfoFromStorage },
 }
 

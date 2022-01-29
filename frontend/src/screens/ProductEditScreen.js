@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
-import axios from 'axios'
 import Loader from '../components/Loader'
 import { Form, Button } from 'react-bootstrap'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -10,16 +9,9 @@ import FormContainer from '../components/FormContainer'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 
 const ProductEditScreen = () => {
-  const [name, setName] = useState('')
-  const [price, setPrice] = useState(0)
-  const [brand, setBrand] = useState('')
-  const [category, setCategory] = useState('')
-  const [description, setDescription] = useState('')
-  const [image, setImage] = useState('')
-  const [partiture, setPartiture] = useState('')
-  const [countInStock, setCountInStock] = useState(0)
-  const [uploading, setUploading] = useState(false)
-  const [embedVideoId, setEmbedVideoId] = useState('')
+  const [concept, setConcept] = useState('')
+  const [amount, setAmount] = useState(0)
+  const [date, setDate] = useState(Date.now())
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -40,74 +32,22 @@ const ProductEditScreen = () => {
   const params = useParams()
   const { id } = params
   useEffect(() => {
-    if (userInfo && userInfo.isAdmin) {
+    if (userInfo) {
       if (successUpdate) {
         dispatch({ type: PRODUCT_UPDATE_RESET })
-        navigate('/admin/productlist')
+        dispatch(detailsProduct(id))
+        navigate('/productlist')
       } else if (!product || product._id !== id) {
         dispatch(detailsProduct(id))
       } else {
-        setName(product.name)
-        setPrice(product.price)
-        setBrand(product.brand)
-        setCategory(product.category)
-        setCountInStock(product.countInStock)
-        setImage(product.image)
-        setDescription(product.description)
-        setPartiture(product.partiture)
-        setEmbedVideoId(product.embedVideoId)
+        setConcept(product.concept)
+        setAmount(product.amount)
+        setDate(product.date)
       }
     } else {
       navigate('/login')
     }
   }, [userInfo, navigate, dispatch, product, id, successUpdate])
-
-  const uploadFileHandler = async (e) => {
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('image', file)
-    setUploading(true)
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      }
-      const { data } = await axios.post('/api/upload', formData, config)
-      setImage(data)
-      setUploading(false)
-    } catch (error) {
-      console.error(error)
-      setUploading(false)
-    }
-  }
-
-  const uploadFilePartitureHandler = async (e) => {
-    const file = e.target.files[0]
-    console.log(e.target.files)
-    const formData = new FormData()
-    formData.append('partiture', file)
-    setUploading(true)
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      }
-      const { data } = await axios.post(
-        '/api/upload/partiture',
-        formData,
-        config
-      )
-      setPartiture(data)
-      setUploading(false)
-    } catch (error) {
-      console.error(error)
-      setUploading(false)
-    }
-  }
 
   const submitHandler = (e) => {
     e.preventDefault()
@@ -115,22 +55,16 @@ const ProductEditScreen = () => {
     dispatch(
       updateProduct({
         _id: id,
-        name,
-        price,
-        brand,
-        category,
-        countInStock,
-        image,
-        description,
-        partiture,
-        embedVideoId,
+        concept,
+        amount,
+        date,
       })
     )
   }
 
   return (
     <>
-      <Link to='/admin/productlist' className='btn btn-light my-3'>
+      <Link to='/productlist' className='btn btn-light my-3'>
         Go Back
       </Link>
       {loading ? (
@@ -147,104 +81,33 @@ const ProductEditScreen = () => {
           ) : error ? (
             <Message variant='danger'>{error}</Message>
           ) : (
-            <Form onSubmit={submitHandler} controlid='name'>
+            <Form onSubmit={submitHandler} controlid='concept'>
               <Form.Group className='py-2'>
-                <Form.Label>Name</Form.Label>
+                <Form.Label>Concept</Form.Label>
                 <Form.Control
                   type='text'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder='Enter Name'
+                  value={concept}
+                  onChange={(e) => setConcept(e.target.value)}
+                  placeholder='Enter concept'
                 ></Form.Control>
               </Form.Group>
 
-              <Form.Group className='py-2' controlid='price'>
-                <Form.Label>price</Form.Label>
+              <Form.Group className='py-2' controlid='amount'>
+                <Form.Label>Amount</Form.Label>
                 <Form.Control
                   type='number'
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder='Enter price'
-                ></Form.Control>
-              </Form.Group>
-              <Form.Group className='py-2' controlid='brand'>
-                <Form.Label>Brand</Form.Label>
-                <Form.Control
-                  type='text'
-                  value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
-                  placeholder='Enter brand'
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder='Enter amount'
                 ></Form.Control>
               </Form.Group>
 
-              <Form.Group className='py-2' controlid='Embeded video id'>
-                <Form.Label>Embeded Id</Form.Label>
+              <Form.Group className='py-2' controlid='date'>
+                <Form.Label>Date</Form.Label>
                 <Form.Control
-                  type='text'
-                  value={embedVideoId}
-                  onChange={(e) => setEmbedVideoId(e.target.value)}
-                  placeholder='Enter Embeded Video Id'
-                ></Form.Control>
-              </Form.Group>
-
-              <Form.Group className='py-2' controlid='category'>
-                <Form.Label>Category</Form.Label>
-                <Form.Control
-                  type='text'
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder='Enter category'
-                ></Form.Control>
-              </Form.Group>
-
-              <Form.Group className='py-2' controlid='countInStock'>
-                <Form.Label>Count In Stock</Form.Label>
-                <Form.Control
-                  type='number'
-                  value={countInStock}
-                  onChange={(e) => setCountInStock(e.target.value)}
-                  placeholder='Enter Count In Stock'
-                ></Form.Control>
-              </Form.Group>
-              <Form.Group className='py-2' controlid='image'>
-                <Form.Label>Image</Form.Label>
-                <Form.Control
-                  type='text'
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  placeholder='Enter image url'
-                ></Form.Control>
-
-                <Form.Control
-                  type='file'
-                  onChange={uploadFileHandler}
-                ></Form.Control>
-                {uploading && <Loader />}
-              </Form.Group>
-
-              <Form.Group className='py-2' controlid='partiture'>
-                <Form.Label>Partiture</Form.Label>
-                <Form.Control
-                  type='text'
-                  value={partiture}
-                  onChange={(e) => setPartiture(e.target.value)}
-                  placeholder='Enter partiture url'
-                ></Form.Control>
-
-                <Form.Control
-                  type='file'
-                  onChange={uploadFilePartitureHandler}
-                ></Form.Control>
-                {uploading && <Loader />}
-              </Form.Group>
-
-              <Form.Group className='py-2' controlid='description'>
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  type='text'
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder='Enter description'
+                  type='date'
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                 ></Form.Control>
               </Form.Group>
 

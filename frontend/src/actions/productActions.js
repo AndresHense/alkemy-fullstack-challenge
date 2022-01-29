@@ -26,11 +26,20 @@ import { logout } from './userActions'
 
 export const listProducts =
   (keyword = '', pageNumber = '') =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
       dispatch({ type: PRODUCT_LIST_REQUEST })
+      const {
+        userLogin: { userInfo },
+      } = getState()
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
       const { data } = await axios.get(
-        `/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
+        `/api/products?pageNumber=${pageNumber}`,
+        config
       )
       dispatch({
         type: PRODUCT_LIST_SUCCESS,
@@ -85,7 +94,7 @@ export const detailsProduct = (id) => async (dispatch) => {
   }
 }
 
-export const createProduct = () => async (dispatch, getState) => {
+export const createProduct = (type) => async (dispatch, getState) => {
   try {
     dispatch({ type: PRODUCT_CREATE_REQUEST })
     const {
@@ -96,7 +105,7 @@ export const createProduct = () => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     }
-    const { data } = await axios.post(`/api/products`, {}, config)
+    const { data } = await axios.post(`/api/products`, { type }, config)
     dispatch({
       type: PRODUCT_CREATE_SUCCESS,
       payload: data,
