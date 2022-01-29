@@ -4,11 +4,14 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { Form, Button } from 'react-bootstrap'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { detailsProduct, updateProduct } from '../actions/productActions'
+import {
+  detailsTransaction,
+  updateTransaction,
+} from '../actions/transactionActions'
 import FormContainer from '../components/FormContainer'
-import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
+import { TRANSACTION_UPDATE_RESET } from '../constants/transactionConstants'
 
-const ProductEditScreen = () => {
+const TransactionEditScreen = () => {
   const [concept, setConcept] = useState('')
   const [amount, setAmount] = useState(0)
   const [date, setDate] = useState(Date.now())
@@ -16,44 +19,44 @@ const ProductEditScreen = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const productDetails = useSelector((state) => state.productDetails)
-  const { product, loading, error } = productDetails
+  const transactionDetails = useSelector((state) => state.transactionDetails)
+  const { transaction, loading, error } = transactionDetails
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  const productUpdate = useSelector((state) => state.productUpdate)
+  const transactionUpdate = useSelector((state) => state.transactionUpdate)
   const {
     success: successUpdate,
     loading: loadingUpdate,
     error: errorUpdate,
-  } = productUpdate
+  } = transactionUpdate
 
   const params = useParams()
   const { id } = params
   useEffect(() => {
     if (userInfo) {
       if (successUpdate) {
-        dispatch({ type: PRODUCT_UPDATE_RESET })
-        dispatch(detailsProduct(id))
-        navigate('/productlist')
-      } else if (!product || product._id !== id) {
-        dispatch(detailsProduct(id))
+        dispatch({ type: TRANSACTION_UPDATE_RESET })
+        dispatch(detailsTransaction(id))
+        navigate('/transactionlist')
+      } else if (!transaction || transaction._id !== id) {
+        dispatch(detailsTransaction(id))
       } else {
-        setConcept(product.concept)
-        setAmount(product.amount)
-        setDate(product.date)
+        setConcept(transaction.concept)
+        setAmount(transaction.amount)
+        setDate(transaction.date)
       }
     } else {
       navigate('/login')
     }
-  }, [userInfo, navigate, dispatch, product, id, successUpdate])
+  }, [userInfo, navigate, dispatch, transaction, id, successUpdate])
 
   const submitHandler = (e) => {
     e.preventDefault()
 
     dispatch(
-      updateProduct({
+      updateTransaction({
         _id: id,
         concept,
         amount,
@@ -64,7 +67,7 @@ const ProductEditScreen = () => {
 
   return (
     <>
-      <Link to='/productlist' className='btn btn-light my-3'>
+      <Link to='/transactionlist' className='btn btn-light my-3'>
         Go Back
       </Link>
       {loading ? (
@@ -73,7 +76,7 @@ const ProductEditScreen = () => {
         <Message variant='danger'>{error}</Message>
       ) : (
         <FormContainer>
-          <h1>Edit Product</h1>
+          <h1>Edit Transaction</h1>
           {loadingUpdate && <Loader />}
           {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
           {loading ? (
@@ -122,4 +125,4 @@ const ProductEditScreen = () => {
   )
 }
 
-export default ProductEditScreen
+export default TransactionEditScreen

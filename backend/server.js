@@ -3,7 +3,7 @@ import connectDB from './config/db.js'
 import path from 'path'
 import dotenv from 'dotenv'
 import colors from 'colors'
-import ProductRouter from './routes/ProductRouter.js'
+import transactionRouter from './routes/transactionRouter.js'
 import userRouter from './routes/userRouter.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 import morgan from 'morgan'
@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(cors())
 dotenv.config()
 
-app.use('/api/products', ProductRouter)
+app.use('/api/transactions', transactionRouter)
 app.use('/api/users', userRouter)
 
 connectDB()

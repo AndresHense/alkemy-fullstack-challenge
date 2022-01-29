@@ -5,9 +5,9 @@ import LoginScreen from './screens/LoginScreen'
 import RegisterScreen from './screens/RegisterScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import UserListScreen from './screens/UserListScreen'
-import ProductListScreen from './screens/ProductListScreen'
+import TransactionListScreen from './screens/TransactionListScreen'
 import UserEditScreen from './screens/UserEditScreen'
-import ProductEditScreen from './screens/ProductEditScreen'
+import TransactionEditScreen from './screens/TransactionEditScreen'
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 function App() {
@@ -17,9 +17,12 @@ function App() {
       <main className='py-3'>
         <Container>
           <Routes>
-            <Route path='/' element={<ProductListScreen />} />
+            <Route path='/' element={<TransactionListScreen />} />
 
-            <Route path='/page/:pageNumber' element={<ProductListScreen />} />
+            <Route
+              path='/page/:pageNumber'
+              element={<TransactionListScreen />}
+            />
             <Route path='/login' element={<LoginScreen />} />
 
             <Route path='/register' element={<RegisterScreen />} />
@@ -27,13 +30,19 @@ function App() {
 
             <Route path='/admin/userlist' element={<UserListScreen />} />
 
-            <Route path='/productlist' element={<ProductListScreen />} />
             <Route
-              path='/productlist/:pageNumber'
-              element={<ProductListScreen />}
+              path='/transactionlist'
+              element={<TransactionListScreen />}
+            />
+            <Route
+              path='/transactionlist/:pageNumber'
+              element={<TransactionListScreen />}
             />
 
-            <Route path='/product/:id/edit' element={<ProductEditScreen />} />
+            <Route
+              path='/transaction/:id/edit'
+              element={<TransactionEditScreen />}
+            />
             <Route path='/admin/user/:id/edit' element={<UserEditScreen />} />
           </Routes>
         </Container>

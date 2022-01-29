@@ -15,13 +15,13 @@ import {
 } from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-  listProducts,
-  deleteProduct,
-  createProduct,
-} from '../actions/productActions'
-import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
+  listTransactions,
+  deleteTransaction,
+  createTransaction,
+} from '../actions/transactionActions'
+import { TRANSACTION_CREATE_RESET } from '../constants/transactionConstants'
 
-const ProductListScreen = () => {
+const TransactionListScreen = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const params = useParams()
@@ -30,41 +30,41 @@ const ProductListScreen = () => {
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  const productList = useSelector((state) => state.productList)
-  const { loading, error, products, page, pages } = productList
+  const transactionList = useSelector((state) => state.transactionList)
+  const { loading, error, transactions, page, pages } = transactionList
 
-  const productDelete = useSelector((state) => state.productDelete)
+  const transactionDelete = useSelector((state) => state.transactionDelete)
   const {
     success: successDelete,
     loading: loadingDelete,
     error: errorDelete,
-  } = productDelete
+  } = transactionDelete
 
-  const productCreate = useSelector((state) => state.productCreate)
+  const transactionCreate = useSelector((state) => state.transactionCreate)
   const {
     success: successCreate,
     loading: loadingCreate,
     error: errorCreate,
-    product: createdProduct,
-  } = productCreate
+    transaction: createdTransaction,
+  } = transactionCreate
 
   let totalAmount = 0
-  if (products)
-    totalAmount = products.reduce(
+  if (transactions)
+    totalAmount = transactions.reduce(
       (acc, p) => acc + (p.type === 'INCOME' ? p.amount : -p.amount),
       0
     )
 
   useEffect(() => {
-    dispatch({ type: PRODUCT_CREATE_RESET })
+    dispatch({ type: TRANSACTION_CREATE_RESET })
     if (!userInfo) {
       navigate('/login')
     }
 
     if (successCreate) {
-      navigate(`/product/${createdProduct._id}/edit`)
+      navigate(`/transaction/${createdTransaction._id}/edit`)
     } else {
-      dispatch(listProducts('', pageNumber))
+      dispatch(listTransactions('', pageNumber))
     }
   }, [
     dispatch,
@@ -72,20 +72,20 @@ const ProductListScreen = () => {
     successDelete,
     userInfo,
     successCreate,
-    createdProduct,
+    createdTransaction,
     pageNumber,
   ])
 
   const deleteHandler = (id) => {
     if (window.confirm('Are you sure?')) {
-      dispatch(deleteProduct(id))
+      dispatch(deleteTransaction(id))
     }
   }
   const createIncomeHandler = () => {
-    dispatch(createProduct('income'))
+    dispatch(createTransaction('income'))
   }
   const createOutcomeHandler = () => {
-    dispatch(createProduct('outcome'))
+    dispatch(createTransaction('outcome'))
   }
   return (
     <>
@@ -94,21 +94,21 @@ const ProductListScreen = () => {
           <h1>Transactions</h1>
         </Col>
         <Col>
-          {products && (
+          {transactions && (
             <Card>
               <ListGroup variant='flush'>
                 <ListGroupItem>
                   <Row>
                     <Col md={6}>
                       Outcome: -$
-                      {products.reduce(
+                      {transactions.reduce(
                         (acc, p) => acc + (p.type === 'OUTCOME' ? p.amount : 0),
                         0
                       )}
                     </Col>
                     <Col>
                       Income: +$
-                      {products.reduce(
+                      {transactions.reduce(
                         (acc, p) => acc + (p.type === 'INCOME' ? p.amount : 0),
                         0
                       )}
@@ -157,14 +157,14 @@ const ProductListScreen = () => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
-                <tr key={product._id}>
-                  <td>{product.concept}</td>
-                  <td>${product.amount}</td>
-                  <td>{product.type}</td>
-                  <td>{product.date.substring(0, 10)}</td>
+              {transactions.map((transaction) => (
+                <tr key={transaction._id}>
+                  <td>{transaction.concept}</td>
+                  <td>${transaction.amount}</td>
+                  <td>{transaction.type}</td>
+                  <td>{transaction.date.substring(0, 10)}</td>
                   <td>
-                    <LinkContainer to={`/product/${product._id}/edit`}>
+                    <LinkContainer to={`/transaction/${transaction._id}/edit`}>
                       <Button variant='light' className='btn-sm'>
                         <i className='fas fa-edit'></i>
                       </Button>
@@ -172,7 +172,7 @@ const ProductListScreen = () => {
                     <Button
                       variant='danger'
                       className='btn-sm'
-                      onClick={() => deleteHandler(product._id)}
+                      onClick={() => deleteHandler(transaction._id)}
                     >
                       <i className='fas fa-trash'></i>
                     </Button>
@@ -188,4 +188,4 @@ const ProductListScreen = () => {
   )
 }
 
-export default ProductListScreen
+export default TransactionListScreen
